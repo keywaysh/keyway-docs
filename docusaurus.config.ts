@@ -104,6 +104,10 @@ const config: Config = {
               label: 'GitHub',
               href: 'https://github.com/keywaysh',
             },
+            {
+              label: 'Status',
+              href: 'https://status.keyway.sh',
+            },
           ],
         },
         {

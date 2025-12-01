@@ -34,7 +34,7 @@ Authorization: Bearer <token>
 
 ## Get usage statistics
 
-Returns the user's current usage and limits.
+Returns the user's current usage and plan limits.
 
 ```http
 GET /v1/users/me/usage
@@ -46,40 +46,23 @@ Authorization: Bearer <token>
 ```json
 {
   "data": {
-    "vaults": {
-      "count": 5,
-      "limit": 10
+    "plan": "free",
+    "limits": {
+      "maxPublicRepos": "unlimited",
+      "maxPrivateRepos": 1
     },
-    "secrets": {
-      "count": 42,
-      "limit": 1000
-    },
-    "plan": "free"
+    "usage": {
+      "public": 2,
+      "private": 0
+    }
   }
 }
 ```
 
 ### Usage limits by plan
 
-| Plan | Vaults | Secrets per vault |
-|------|--------|-------------------|
-| Free | 10 | 100 |
-| Pro | Unlimited | 1000 |
+| Plan | Public repos | Private repos |
+|------|--------------|---------------|
+| Free | Unlimited | 1 |
+| Pro | Unlimited | Unlimited |
 | Team | Unlimited | Unlimited |
-
----
-
-## Delete account
-
-Permanently delete your account and all associated data.
-
-```http
-DELETE /v1/users/me
-Authorization: Bearer <token>
-```
-
-**Response (204 No Content)**
-
-:::danger
-This action is irreversible. All your vaults and secrets will be permanently deleted.
-:::

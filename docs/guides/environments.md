@@ -12,7 +12,7 @@ Environments let you maintain separate secret configurations for different stage
 Every new vault starts with four environments:
 
 - **local** - For local development
-- **dev** - Shared development environment
+- **development** - Shared development environment
 - **staging** - Pre-production testing
 - **production** - Live environment
 

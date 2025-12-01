@@ -44,14 +44,7 @@ That's it! They now have access to the secrets.
 
 ## Environment-specific permissions
 
-By default, all environments inherit GitHub repo permissions. Admins can customize this:
-
-```bash
-# Restrict production to admins only
-keyway permissions set production --read admin --write admin
-```
-
-Or via the [dashboard](https://keyway.sh/dashboard).
+By default, all environments inherit GitHub repo permissions. Admins can customize this via the [dashboard](https://keyway.sh/dashboard) or the API.
 
 ## Audit trail
 

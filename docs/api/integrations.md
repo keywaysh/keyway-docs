@@ -19,13 +19,18 @@ GET /v1/integrations
 
 ```json
 {
-  "providers": [
-    {
-      "id": "vercel",
-      "name": "Vercel",
-      "description": "Deploy and sync environment variables with Vercel"
-    }
-  ]
+  "data": {
+    "providers": [
+      {
+        "name": "vercel",
+        "displayName": "Vercel",
+        "configured": true
+      }
+    ]
+  },
+  "meta": {
+    "requestId": "550e8400-e29b-41d4-a716-446655440000"
+  }
 }
 ```
 
@@ -44,14 +49,19 @@ Authorization: Bearer <token>
 
 ```json
 {
-  "connections": [
-    {
-      "id": "550e8400-e29b-41d4-a716-446655440000",
-      "provider": "vercel",
-      "providerAccountId": "team_xxx",
-      "createdAt": "2025-01-15T10:00:00Z"
-    }
-  ]
+  "data": {
+    "connections": [
+      {
+        "id": "550e8400-e29b-41d4-a716-446655440000",
+        "provider": "vercel",
+        "providerAccountId": "team_xxx",
+        "createdAt": "2025-01-15T10:00:00Z"
+      }
+    ]
+  },
+  "meta": {
+    "requestId": "550e8400-e29b-41d4-a716-446655440000"
+  }
 }
 ```
 
@@ -91,13 +101,7 @@ DELETE /v1/integrations/connections/:id
 Authorization: Bearer <token>
 ```
 
-**Response:**
-
-```json
-{
-  "success": true
-}
-```
+**Response:** `204 No Content`
 
 ---
 
@@ -114,13 +118,19 @@ Authorization: Bearer <token>
 
 ```json
 {
-  "projects": [
-    {
-      "id": "prj_xxx",
-      "name": "my-app",
-      "framework": "nextjs"
-    }
-  ]
+  "data": {
+    "projects": [
+      {
+        "id": "prj_xxx",
+        "name": "my-app",
+        "linkedRepo": "owner/repo",
+        "framework": "nextjs"
+      }
+    ]
+  },
+  "meta": {
+    "requestId": "550e8400-e29b-41d4-a716-446655440000"
+  }
 }
 ```
 
@@ -131,7 +141,7 @@ Authorization: Bearer <token>
 Check if secrets are in sync between Keyway and a provider project.
 
 ```http
-GET /v1/vaults/:owner/:repo/sync/status
+GET /v1/integrations/vaults/:owner/:repo/sync/status
 Authorization: Bearer <token>
 ```
 
@@ -147,10 +157,15 @@ Authorization: Bearer <token>
 
 ```json
 {
-  "inSync": false,
-  "lastSyncAt": "2025-01-15T10:00:00Z",
-  "keywaySecretCount": 12,
-  "providerSecretCount": 10
+  "data": {
+    "isFirstSync": true,
+    "vaultIsEmpty": false,
+    "providerHasSecrets": true,
+    "providerSecretCount": 10
+  },
+  "meta": {
+    "requestId": "550e8400-e29b-41d4-a716-446655440000"
+  }
 }
 ```
 
@@ -161,7 +176,7 @@ Authorization: Bearer <token>
 Preview what changes would be made during a sync operation.
 
 ```http
-GET /v1/vaults/:owner/:repo/sync/preview
+GET /v1/integrations/vaults/:owner/:repo/sync/preview
 Authorization: Bearer <token>
 ```
 
@@ -180,17 +195,14 @@ Authorization: Bearer <token>
 
 ```json
 {
-  "changes": {
-    "create": ["NEW_API_KEY", "NEW_SECRET"],
-    "update": ["DATABASE_URL"],
-    "delete": [],
-    "unchanged": ["EXISTING_KEY"]
+  "data": {
+    "toCreate": ["NEW_API_KEY", "NEW_SECRET"],
+    "toUpdate": ["DATABASE_URL"],
+    "toDelete": [],
+    "toSkip": ["EXISTING_KEY"]
   },
-  "stats": {
-    "create": 2,
-    "update": 1,
-    "delete": 0,
-    "unchanged": 1
+  "meta": {
+    "requestId": "550e8400-e29b-41d4-a716-446655440000"
   }
 }
 ```
@@ -202,7 +214,7 @@ Authorization: Bearer <token>
 Sync secrets between Keyway and a provider.
 
 ```http
-POST /v1/vaults/:owner/:repo/sync
+POST /v1/integrations/vaults/:owner/:repo/sync
 Authorization: Bearer <token>
 Content-Type: application/json
 ```
@@ -233,13 +245,15 @@ Content-Type: application/json
 
 ```json
 {
-  "success": true,
-  "stats": {
+  "data": {
+    "status": "success",
     "created": 2,
     "updated": 1,
     "deleted": 0,
-    "skipped": 0,
-    "total": 3
+    "skipped": 0
+  },
+  "meta": {
+    "requestId": "550e8400-e29b-41d4-a716-446655440000"
   }
 }
 ```

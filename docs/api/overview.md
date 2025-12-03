@@ -32,34 +32,41 @@ Both token types work interchangeably.
 
 ## Response format
 
-All responses follow this structure:
+All successful responses follow this structure:
 
 ```json
 {
-  "status": "ok",
   "data": { ... },
-  "requestId": "550e8400-e29b-41d4-a716-446655440000"
+  "meta": {
+    "requestId": "550e8400-e29b-41d4-a716-446655440000"
+  }
 }
 ```
 
 ### Paginated responses
 
-List endpoints include pagination metadata:
+List endpoints include pagination metadata in the `meta` object:
 
 ```json
 {
-  "status": "ok",
-  "data": { "items": [...] },
-  "pagination": {
-    "offset": 0,
-    "limit": 25,
-    "total": 100,
-    "returned": 25
+  "data": [...],
+  "meta": {
+    "requestId": "550e8400-e29b-41d4-a716-446655440000",
+    "pagination": {
+      "total": 100,
+      "limit": 25,
+      "offset": 0,
+      "hasMore": true
+    }
   }
 }
 ```
 
 Use `?limit=N&offset=M` query parameters to paginate.
+
+### No Content responses
+
+Some endpoints (like DELETE operations) return `204 No Content` with an empty body.
 
 ## Error format
 
@@ -102,4 +109,5 @@ When rate limited, you'll receive a `429` response with a `Retry-After` header.
 - [Vaults](/api/vaults) - Create, list, delete vaults
 - [Secrets](/api/secrets) - Push, pull, manage secrets
 - [Environments](/api/environments) - Manage vault environments
+- [Integrations](/api/integrations) - Provider connections (Vercel, etc.)
 - [Users](/api/users) - User profile and usage

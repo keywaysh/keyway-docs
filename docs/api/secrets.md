@@ -107,6 +107,55 @@ Authorization: Bearer <token>
 
 **Response (204 No Content)**
 
+### Get secret value
+
+Retrieve a secret's decrypted value and preview. Used for secure copy/reveal functionality in the dashboard.
+
+:::caution Security
+This endpoint returns the actual secret value. Every access is logged in the activity audit trail.
+:::
+
+:::info Rate Limit
+This endpoint is rate limited to **10 requests per minute** to prevent enumeration attacks.
+:::
+
+```http
+GET /v1/vaults/:owner/:repo/secrets/:secretId/value
+Authorization: Bearer <token>
+```
+
+**Response:**
+
+```json
+{
+  "data": {
+    "value": "postgres://user:password@localhost:5432/db",
+    "preview": "post••••2/db"
+  }
+}
+```
+
+**Response fields:**
+
+| Field | Description |
+|-------|-------------|
+| `value` | The full decrypted secret value |
+| `preview` | Partially masked preview (first 4 + •••• + last 4 chars) |
+
+**Preview masking rules:**
+
+- Values ≤ 8 chars: `••••••••` (fully masked)
+- Values 9-12 chars: First 2 + `••••` + last 2 chars
+- Values > 12 chars: First 4 + `••••` + last 4 chars
+
+**Errors:**
+
+| Status | Type | Description |
+|--------|------|-------------|
+| 403 | `forbidden` | No read access to the vault |
+| 404 | `not-found` | Vault or secret not found |
+| 429 | `rate-limited` | Too many requests (max 10/minute) |
+
 ---
 
 ## CLI API

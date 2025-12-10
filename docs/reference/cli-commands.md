@@ -196,6 +196,8 @@ keyway connect <provider>
 
 **Supported providers:**
 - `vercel` - Vercel deployment platform
+- `railway` - Railway deployment platform
+- `netlify` - Netlify deployment platform
 
 **Example:**
 

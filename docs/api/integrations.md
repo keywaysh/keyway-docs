@@ -266,5 +266,5 @@ Content-Type: application/json
 |----------|--------|----------|
 | Vercel | Available | Push/pull secrets, multiple environments |
 | Railway | Available | Push/pull secrets, multiple environments |
-| Netlify | Coming soon | - |
+| Netlify | Available | Push/pull secrets, multiple environments |
 | Fly.io | Coming soon | - |

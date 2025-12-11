@@ -19,7 +19,9 @@ Use a **GitHub Fine-grained Personal Access Token** for CI/CD:
 
 ## GitHub Actions
 
-### Basic setup
+### Using the Keyway Action (Recommended)
+
+The easiest way to use Keyway in GitHub Actions:
 
 ```yaml
 name: Deploy
@@ -31,58 +33,86 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: keywaysh/keyway-action@v1
         with:
-          node-version: '20'
+          token: ${{ secrets.KEYWAY_TOKEN }}
+          environment: production
 
-      - name: Install Keyway CLI
-        run: npm install -g @keywaysh/cli
-
-      - name: Pull secrets
-        run: keyway pull -e production -y
-        env:
-          KEYWAY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Deploy
+      - name: Deploy (secrets are now in env)
         run: ./deploy.sh
 ```
 
-### Using GitHub token
+The action automatically:
+- Pulls secrets from your Keyway vault
+- Exports them as environment variables
+- Masks values in workflow logs
 
-GitHub Actions provides a `GITHUB_TOKEN` automatically. For public repos or repos where the workflow has access, this works directly:
+### Quick setup with CLI
 
-```yaml
-- name: Pull secrets
-  run: keyway pull -e production -y
-  env:
-    KEYWAY_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+Set up the `KEYWAY_TOKEN` secret automatically:
+
+```bash
+keyway ci setup
 ```
 
-### Using a PAT
+This command detects your repo and adds the secret for you (uses `gh` CLI if available).
 
-For cross-repo access or more control, use a PAT:
+### Action inputs
+
+| Input | Description | Default |
+|-------|-------------|---------|
+| `token` | Keyway authentication token | Required |
+| `environment` | Vault environment | `production` |
+| `export-env` | Export as env vars | `true` |
+| `env-file` | Write to .env file | - |
+| `mask-values` | Mask values in logs | `true` |
+
+### Write to .env file
 
 ```yaml
-- name: Pull secrets
-  run: keyway pull -e production -y
-  env:
-    KEYWAY_TOKEN: ${{ secrets.KEYWAY_PAT }}
-```
-
-### Caching the CLI
-
-Speed up workflows by caching:
-
-```yaml
-- name: Cache Keyway CLI
-  uses: actions/cache@v4
+- uses: keywaysh/keyway-action@v1
   with:
-    path: ~/.npm
-    key: keyway-cli-${{ runner.os }}
+    token: ${{ secrets.KEYWAY_TOKEN }}
+    env-file: .env
+    export-env: false
+```
+
+### Multiple environments
+
+```yaml
+jobs:
+  test:
+    steps:
+      - uses: keywaysh/keyway-action@v1
+        with:
+          token: ${{ secrets.KEYWAY_TOKEN }}
+          environment: development
+
+  deploy:
+    steps:
+      - uses: keywaysh/keyway-action@v1
+        with:
+          token: ${{ secrets.KEYWAY_TOKEN }}
+          environment: production
+```
+
+### Alternative: Using the CLI
+
+If you prefer using the CLI directly:
+
+```yaml
+- name: Setup Node.js
+  uses: actions/setup-node@v4
+  with:
+    node-version: '20'
 
 - name: Install Keyway CLI
   run: npm install -g @keywaysh/cli
+
+- name: Pull secrets
+  run: keyway pull -e production -y
+  env:
+    KEYWAY_TOKEN: ${{ secrets.KEYWAY_TOKEN }}
 ```
 
 ## GitLab CI

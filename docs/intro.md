@@ -1,37 +1,44 @@
 ---
 slug: /
 sidebar_position: 1
-title: Introduction
+title: Getting Started
 ---
 
-# Keyway Documentation
+# Keyway
 
-Keyway is a **GitHub-native secrets management** platform. If you have access to a GitHub repository, you automatically get access to its secrets - no separate access control to manage.
+**GitHub-native secrets management.** If you have access to a repo, you have access to its secrets.
 
-## Why Keyway?
+## Quick Start
 
-- **GitHub-based access control**: Your team's repo permissions = their secret permissions
-- **CLI-first workflow**: Push and pull secrets like you push code
-- **End-to-end encryption**: AES-256-GCM encryption at rest
-- **Environment support**: Separate secrets for local, dev, staging, production
+**1. Install**
 
-## How it works
+```bash npm2yarn
+npm install -g @keywaysh/cli
+```
 
-1. **Install the CLI**: `npm install -g @keywaysh/cli`
-2. **Login**: `keyway login` (authenticates via GitHub)
-3. **Initialize a vault**: `keyway init` (in any GitHub repo)
-4. **Push secrets**: `keyway push` (syncs your `.env` file)
-5. **Pull secrets**: `keyway pull` (downloads secrets to `.env`)
+**2. Initialize & Push**
 
-Your team members with repo access can immediately pull secrets - no invitations needed.
+```bash
+cd your-project
+keyway init    # Opens browser for GitHub auth
+keyway push    # Sync your .env
+```
 
-## Quick links
+**3. Pull (on another machine or teammate)**
 
-- [Installation](/quickstart/installation) - Get started in 2 minutes
-- [API Reference](/api/overview) - REST API documentation
-- [CLI Commands](/reference/cli-commands) - Full CLI reference
+```bash
+keyway pull
+```
 
-## Architecture overview
+**4. Sync with a provider (optional)**
+
+```bash
+keyway sync vercel
+```
+
+That's it. Your team members with repo access can immediately `keyway pull`.
+
+## How It Works
 
 ```
 ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
@@ -39,13 +46,66 @@ Your team members with repo access can immediately pull secrets - no invitations
 │  (your PC)  │     │    API      │     │    API      │
 └─────────────┘     └─────────────┘     └─────────────┘
                            │
-                           ▼
-                    ┌─────────────┐
-                    │  PostgreSQL │
-                    │ (encrypted) │
-                    └─────────────┘
+                    ┌──────┴──────┐
+                    ▼             ▼
+             ┌───────────┐ ┌─────────────┐
+             │  Crypto   │ │  PostgreSQL │
+             │ (isolated)│ │ (encrypted) │
+             └───────────┘ └─────────────┘
 ```
 
-- **CLI** authenticates you via GitHub OAuth
-- **API** verifies your repo access via GitHub API
-- **Secrets** are encrypted with AES-256-GCM before storage
+- **CLI** authenticates via GitHub OAuth
+- **API** verifies repo access via GitHub API
+- **Secrets** encrypted with AES-256-GCM
+
+## Team Access
+
+GitHub repo permissions = Keyway permissions. No separate invitations.
+
+**Personal repos:** Owner has full access, collaborators get read/write.
+
+| Role | Can Read | Can Write |
+|------|:--------:|:---------:|
+| Owner | ✓ | ✓ |
+| Collaborator | ✓ | ✓ |
+
+**Organization repos:** Fine-grained roles available.
+
+| Role | Can Read | Can Write | Can Admin |
+|------|:--------:|:---------:|:---------:|
+| Admin | ✓ | ✓ | ✓ |
+| Maintain | ✓ | ✓ | - |
+| Write | ✓ | ✓ | - |
+| Triage | ✓ | - | - |
+| Read | ✓ | - | - |
+
+**Onboarding a teammate:**
+1. Add them to GitHub repo
+2. They run `keyway pull`
+
+## Environments
+
+Default environments: `development`, `staging`, `production`
+
+```bash
+keyway push -e production
+keyway pull -e staging
+```
+
+## Plans
+
+| | Free | Pro ($9/mo) | Team ($29/mo) |
+|--|:--:|:--:|:--:|
+| Public repos | ∞ | ∞ | ∞ |
+| Private repos | 1 | ∞ | ∞ |
+| Private org repos | - | - | ∞ |
+| Providers | 1 | ∞ | ∞ |
+| Environments | 2 | ∞ | ∞ |
+
+Upgrade: [keyway.sh/settings](https://keyway.sh/settings)
+
+## Next Steps
+
+- [CLI Reference](/cli) - All commands
+- [CI/CD](/ci-cd) - GitHub Actions integration
+- [API](/api) - REST API docs

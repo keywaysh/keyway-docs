@@ -1,6 +1,7 @@
 import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import npm2yarn from '@docusaurus/remark-plugin-npm2yarn';
 
 const config: Config = {
   title: 'Keyway Documentation',
@@ -32,6 +33,7 @@ const config: Config = {
           sidebarPath: './sidebars.ts',
           editUrl: 'https://github.com/keywaysh/keyway-docs/tree/main/',
           routeBasePath: '/', // Docs at root
+          remarkPlugins: [[npm2yarn, {sync: true}]],
         },
         blog: false, // Disable blog
         theme: {
@@ -61,7 +63,7 @@ const config: Config = {
           label: 'Docs',
         },
         {
-          to: '/api/overview',
+          to: '/api',
           label: 'API Reference',
           position: 'left',
         },
@@ -89,7 +91,7 @@ const config: Config = {
             },
             {
               label: 'API Reference',
-              to: '/api/overview',
+              to: '/api',
             },
           ],
         },

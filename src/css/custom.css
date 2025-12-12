@@ -28,3 +28,16 @@
   --ifm-color-primary-lightest: #4fddbf;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+/* Compact npm2yarn tabs */
+.tabs-container .tabs {
+  font-size: 0.8rem;
+}
+
+.tabs-container .tabs__item {
+  padding: 0.25rem 0.75rem;
+}
+
+.tabs-container .margin-top--md {
+  margin-top: 0 !important;
+}

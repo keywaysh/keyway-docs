@@ -18,7 +18,86 @@ Authorization: Bearer <token>
 | Token Type | Source | Use Case |
 |------------|--------|----------|
 | Keyway JWT | `keyway login` → `~/.config/keyway/config.json` | CLI, scripts |
-| GitHub PAT | [Fine-grained PAT](https://github.com/settings/tokens?type=beta) | CI/CD |
+| Keyway API Key | Dashboard → API Keys | CI/CD, automation |
+| GitHub PAT | [Fine-grained PAT](https://github.com/settings/tokens?type=beta) | Legacy CI/CD |
+
+---
+
+## API Keys
+
+Create and manage API keys from the [Dashboard](https://keyway.sh/dashboard/api-keys).
+
+### Token Format
+
+```
+kw_live_a1B2c3D4e5F6g7H8i9J0k1L2m3N4o5P6q7R8s9T0
+└─┘ └──┘ └────────────────────────────────────────┘
+ │    │                    │
+ │    │                    └── 40 chars base62 (240-bit entropy)
+ │    └── Environment: live | test
+ └── Prefix
+```
+
+### Scopes
+
+| Scope | Permissions |
+|-------|-------------|
+| `read:secrets` | Pull secrets, list vaults |
+| `write:secrets` | Push secrets, create/update vaults |
+| `delete:secrets` | Delete secrets, trash vaults |
+| `admin:api-keys` | Create/revoke API keys |
+
+### Create API Key
+
+```http
+POST /v1/api-keys
+{
+  "name": "CI/CD Production",
+  "environment": "live",
+  "scopes": ["read:secrets", "write:secrets"],
+  "expiresInDays": 365
+}
+```
+
+Returns the full token **once**. Store it securely.
+
+```json
+{
+  "data": {
+    "id": "uuid",
+    "name": "CI/CD Production",
+    "token": "kw_live_a1B2c3D4...",
+    "prefix": "kw_live_a1B2c3D4",
+    "environment": "live",
+    "scopes": ["read:secrets", "write:secrets"],
+    "expiresAt": "2026-01-01T00:00:00Z"
+  }
+}
+```
+
+### List API Keys
+
+```http
+GET /v1/api-keys
+```
+
+Returns all keys (token is never returned after creation).
+
+### Revoke API Key
+
+```http
+DELETE /v1/api-keys/:id
+```
+
+Immediate revocation. Cannot be undone.
+
+### Usage Example
+
+```bash
+# Pull secrets with API key
+curl -H "Authorization: Bearer kw_live_xxx" \
+  "https://api.keyway.sh/v1/secrets/pull?repo=owner/repo&environment=production"
+```
 
 ---
 

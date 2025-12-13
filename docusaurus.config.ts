@@ -6,7 +6,7 @@ import npm2yarn from '@docusaurus/remark-plugin-npm2yarn';
 const config: Config = {
   title: 'Keyway Documentation',
   tagline: 'GitHub-native secrets management for teams',
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.svg',
 
   future: {
     v4: true,
@@ -33,7 +33,7 @@ const config: Config = {
           sidebarPath: './sidebars.ts',
           editUrl: 'https://github.com/keywaysh/keyway-docs/tree/main/',
           routeBasePath: '/', // Docs at root
-          remarkPlugins: [[npm2yarn, {sync: true}]],
+          remarkPlugins: [[npm2yarn, {sync: true, converters: ['pnpm', 'yarn']}]],
         },
         blog: false, // Disable blog
         theme: {

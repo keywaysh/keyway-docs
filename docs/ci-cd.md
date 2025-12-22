@@ -7,7 +7,24 @@ title: CI/CD
 
 ## Authentication
 
-Use a [GitHub Fine-grained PAT](https://github.com/settings/tokens?type=beta) with `Contents: Read` permission.
+### API Keys (Recommended)
+
+Keyway API keys are the recommended authentication method for CI/CD:
+
+1. Create an API key in your [Dashboard](https://keyway.sh/dashboard/api-keys)
+2. Select `read:secrets` scope (least privilege for pulling)
+3. Set an expiration date (up to 1 year)
+4. Add as a CI secret named `KEYWAY_TOKEN`
+
+**Benefits over PATs:**
+- Scoped permissions (read-only possible)
+- Keyway-specific (no GitHub access)
+- Easily revocable
+- Expiration dates
+
+### GitHub PAT (Legacy)
+
+You can still use a [fine-grained PAT](https://github.com/settings/tokens?type=beta) with `Contents: Read`, but API keys are preferred.
 
 ---
 
@@ -39,7 +56,7 @@ The action pulls secrets, exports them as env vars, and masks values in logs.
 
 | Input | Default | Description |
 |-------|---------|-------------|
-| `token` | required | Keyway token |
+| `token` | required | Keyway API key or PAT |
 | `environment` | `production` | Vault environment |
 | `export-env` | `true` | Export as env vars |
 | `env-file` | - | Write to .env file |
@@ -48,8 +65,11 @@ The action pulls secrets, exports them as env vars, and masks values in logs.
 ### Quick Setup
 
 ```bash
-keyway ci setup  # Adds KEYWAY_TOKEN secret to repo
+# Create an API key and add it as a GitHub secret
+keyway ci setup
 ```
+
+This creates a `KEYWAY_TOKEN` secret in your repository.
 
 ### Write to File
 
@@ -75,6 +95,28 @@ keyway ci setup  # Adds KEYWAY_TOKEN secret to repo
     KEYWAY_TOKEN: ${{ secrets.KEYWAY_TOKEN }}
 ```
 
+### Multiple Environments
+
+```yaml
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: keywaysh/keyway-action@v1
+        with:
+          token: ${{ secrets.KEYWAY_TOKEN }}
+          environment: staging
+
+  deploy-production:
+    runs-on: ubuntu-latest
+    needs: deploy-staging
+    steps:
+      - uses: keywaysh/keyway-action@v1
+        with:
+          token: ${{ secrets.KEYWAY_TOKEN }}
+          environment: production
+```
+
 ---
 
 ## GitLab CI
@@ -88,10 +130,10 @@ deploy:
     - keyway pull -e production -y
     - ./deploy.sh
   variables:
-    KEYWAY_TOKEN: $KEYWAY_PAT
+    KEYWAY_TOKEN: $KEYWAY_TOKEN
 ```
 
-Store `KEYWAY_PAT` in Settings → CI/CD → Variables.
+Store `KEYWAY_TOKEN` in Settings -> CI/CD -> Variables (masked).
 
 ---
 
@@ -110,9 +152,11 @@ jobs:
       - run:
           command: keyway pull -e production -y
           environment:
-            KEYWAY_TOKEN: ${KEYWAY_PAT}
+            KEYWAY_TOKEN: ${KEYWAY_TOKEN}
       - run: ./deploy.sh
 ```
+
+Add `KEYWAY_TOKEN` in Project Settings -> Environment Variables.
 
 ---
 
@@ -122,7 +166,7 @@ jobs:
 pipeline {
     agent any
     environment {
-        KEYWAY_TOKEN = credentials('keyway-pat')
+        KEYWAY_TOKEN = credentials('keyway-token')
     }
     stages {
         stage('Setup') {
@@ -138,6 +182,8 @@ pipeline {
 }
 ```
 
+Add `keyway-token` as a Secret Text credential.
+
 ---
 
 ## Docker
@@ -152,6 +198,11 @@ COPY . .
 CMD keyway pull -y && npm start
 ```
 
+Pass the token at runtime:
+```bash
+docker run -e KEYWAY_TOKEN=kw_live_xxx myapp
+```
+
 ### Build-time
 
 ```yaml
@@ -162,12 +213,82 @@ CMD keyway pull -y && npm start
     docker build --build-arg DATABASE_URL=$DATABASE_URL -t app .
 ```
 
+:::caution
+Build-time secrets may be cached in image layers. Prefer runtime injection.
+:::
+
+---
+
+## Kubernetes
+
+### Using init containers
+
+```yaml
+apiVersion: v1
+kind: Pod
+spec:
+  initContainers:
+    - name: keyway
+      image: node:20-alpine
+      command: ['sh', '-c', 'npm install -g @keywaysh/cli && keyway pull -y -f /secrets/.env']
+      env:
+        - name: KEYWAY_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: keyway-token
+              key: token
+      volumeMounts:
+        - name: secrets
+          mountPath: /secrets
+  containers:
+    - name: app
+      image: myapp
+      envFrom:
+        - secretRef:
+            name: app-secrets
+      volumeMounts:
+        - name: secrets
+          mountPath: /secrets
+  volumes:
+    - name: secrets
+      emptyDir: {}
+```
+
+### External Secrets Operator
+
+Coming soon: Native ESO integration.
+
 ---
 
 ## Best Practices
 
-1. **Environment-specific tokens** - Separate PATs for staging/production
-2. **Pull only when needed** - Not in test jobs
-3. **Don't log secrets** - Use `> /dev/null` if needed
-4. **Read-only access** - CI only needs read permissions
-5. **Rotate tokens** - Periodically refresh CI tokens
+1. **Use API keys** - More secure than PATs, with scoped permissions
+2. **Least privilege** - Use `read:secrets` scope for pulling
+3. **Set expiration** - API keys should expire within 1 year
+4. **Separate environments** - Different secrets for staging/production
+5. **Pull only when needed** - Skip in test jobs that don't need secrets
+6. **Don't log secrets** - Action masks by default, use `> /dev/null` with CLI
+7. **Rotate regularly** - Refresh tokens after team changes
+
+---
+
+## Troubleshooting
+
+### "API key missing required scope"
+
+Your API key doesn't have the required scope. Create a new key with `read:secrets` for pulling or `write:secrets` for pushing.
+
+### "Vault not found"
+
+Run `keyway init` locally first to create the vault, or check the repository name is correct.
+
+### "Token expired"
+
+Create a new API key and update your CI secrets.
+
+### Rate limiting
+
+If you're hitting rate limits, consider:
+- Caching secrets between steps
+- Using environment files instead of pulling multiple times
+- Contacting support for increased limits

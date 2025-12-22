@@ -83,9 +83,20 @@ GitHub repo permissions = Keyway permissions. No separate invitations.
 1. Add them to GitHub repo
 2. They run `keyway pull`
 
+## Organizations
+
+For teams, install the [Keyway GitHub App](https://github.com/apps/keyway-sh) on your organization to unlock:
+
+- Centralized billing (Team plan for the whole org)
+- Member sync from GitHub
+- 14-day free trial
+- Permission overrides per environment
+
+See [Organizations](/organizations) for details.
+
 ## Environments
 
-Default environments: `development`, `staging`, `production`
+Default environments: `local`, `development`, `staging`, `production`
 
 ```bash
 keyway push -e production
@@ -96,16 +107,21 @@ keyway pull -e staging
 
 | | Free | Pro ($9/mo) | Team ($29/mo) |
 |--|:--:|:--:|:--:|
-| Public repos | ∞ | ∞ | ∞ |
-| Private repos | 1 | ∞ | ∞ |
-| Private org repos | - | - | ∞ |
-| Providers | 1 | ∞ | ∞ |
-| Environments | 2 | ∞ | ∞ |
+| Public repos | Unlimited | Unlimited | Unlimited |
+| Private repos | 1 | Unlimited | Unlimited |
+| Private org repos | - | - | Unlimited |
+| Providers | 2 | Unlimited | Unlimited |
+| Environments | 2 | Unlimited | Unlimited |
+| Secret versions | - | 30 days | 30 days |
+| Activity logs | 7 days | 30 days | 90 days |
+| Permission overrides | - | - | ✓ |
 
 Upgrade: [keyway.sh/settings](https://keyway.sh/settings)
 
 ## Next Steps
 
 - [CLI Reference](/cli) - All commands
-- [CI/CD](/ci-cd) - GitHub Actions integration
-- [API](/api) - REST API docs
+- [CI/CD](/ci-cd) - GitHub Actions, GitLab, and more
+- [API](/api) - REST API and API keys
+- [Organizations](/organizations) - Team billing and management
+- [Security](/security) - Permissions and activity logs

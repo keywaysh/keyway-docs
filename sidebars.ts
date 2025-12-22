@@ -8,6 +8,7 @@ const sidebars: SidebarsConfig = {
     'ci-cd',
     'mcp',
     'security',
+    'organizations',
     'integrations',
   ],
 };

@@ -17,8 +17,8 @@ Authorization: Bearer <token>
 
 | Token Type | Source | Use Case |
 |------------|--------|----------|
-| Keyway JWT | `keyway login` → `~/.config/keyway/config.json` | CLI, scripts |
-| Keyway API Key | Dashboard → API Keys | CI/CD, automation |
+| Keyway API Key | Dashboard -> API Keys | CI/CD, automation (recommended) |
+| Keyway JWT | `keyway login` -> `~/.config/keyway/config.json` | CLI, scripts |
 | GitHub PAT | [Fine-grained PAT](https://github.com/settings/tokens?type=beta) | Legacy CI/CD |
 
 ---
@@ -42,10 +42,14 @@ kw_live_a1B2c3D4e5F6g7H8i9J0k1L2m3N4o5P6q7R8s9T0
 
 | Scope | Permissions |
 |-------|-------------|
-| `read:secrets` | Pull secrets, list vaults |
-| `write:secrets` | Push secrets, create/update vaults |
-| `delete:secrets` | Delete secrets, trash vaults |
+| `read:secrets` | Pull secrets, list vaults, view secret values |
+| `write:secrets` | Push secrets, create/update vaults and secrets |
+| `delete:secrets` | Delete secrets, trash operations, delete vaults |
 | `admin:api-keys` | Create/revoke API keys |
+
+:::tip Least Privilege
+For CI/CD pipelines that only need to pull secrets, use only `read:secrets` scope.
+:::
 
 ### Create API Key
 
@@ -55,7 +59,8 @@ POST /v1/api-keys
   "name": "CI/CD Production",
   "environment": "live",
   "scopes": ["read:secrets", "write:secrets"],
-  "expiresInDays": 365
+  "expiresInDays": 365,
+  "allowedIps": ["192.168.1.0/24"]  // Optional IP restrictions
 }
 ```
 
@@ -82,6 +87,12 @@ GET /v1/api-keys
 ```
 
 Returns all keys (token is never returned after creation).
+
+### Get API Key
+
+```http
+GET /v1/api-keys/:id
+```
 
 ### Revoke API Key
 
@@ -130,7 +141,15 @@ GET /v1/vaults/:owner/:repo
 DELETE /v1/vaults/:owner/:repo
 ```
 
-Requires admin access. Deletes all secrets.
+Requires admin access. Permanently deletes all secrets.
+
+### List collaborators
+
+```http
+GET /v1/vaults/:owner/:repo/collaborators
+```
+
+Returns all GitHub collaborators with their roles.
 
 ---
 
@@ -160,11 +179,18 @@ PATCH /v1/vaults/:owner/:repo/secrets/:secretId
 { "value": "new_value" }
 ```
 
+Can also rename:
+```json
+{ "name": "NEW_KEY_NAME" }
+```
+
 ### Delete secret
 
 ```http
 DELETE /v1/vaults/:owner/:repo/secrets/:secretId
 ```
+
+Moves to trash (soft delete). See [Trash](#trash) to permanently delete.
 
 ### Get secret value
 
@@ -184,6 +210,88 @@ Returns single secret value. Logged in audit trail.
 
 ---
 
+## Secret Versions
+
+Keyway keeps a history of secret changes (Team plan: 30 days).
+
+### List versions
+
+```http
+GET /v1/vaults/:owner/:repo/secrets/:secretId/versions
+```
+
+Returns:
+```json
+{
+  "data": [
+    {
+      "id": "version-uuid",
+      "versionNumber": 3,
+      "createdAt": "2025-01-15T10:00:00Z",
+      "createdBy": "user-uuid"
+    },
+    {
+      "id": "version-uuid-2",
+      "versionNumber": 2,
+      "createdAt": "2025-01-10T10:00:00Z",
+      "createdBy": "user-uuid"
+    }
+  ]
+}
+```
+
+### Get version value
+
+```http
+GET /v1/vaults/:owner/:repo/secrets/:secretId/versions/:versionId/value
+```
+
+Returns the secret value at that specific version.
+
+### Restore version
+
+```http
+POST /v1/vaults/:owner/:repo/secrets/:secretId/versions/:versionId/restore
+```
+
+Restores the secret to this version (creates a new version with the old value).
+
+---
+
+## Trash
+
+Deleted secrets are soft-deleted and can be recovered.
+
+### List trashed secrets
+
+```http
+GET /v1/vaults/:owner/:repo/trash?limit=25&offset=0
+```
+
+### Restore from trash
+
+```http
+POST /v1/vaults/:owner/:repo/trash/:secretId/restore
+```
+
+### Permanently delete
+
+```http
+DELETE /v1/vaults/:owner/:repo/trash/:secretId
+```
+
+**Warning:** This cannot be undone.
+
+### Empty trash
+
+```http
+DELETE /v1/vaults/:owner/:repo/trash
+```
+
+Permanently deletes all trashed secrets.
+
+---
+
 ## Bulk Operations (CLI)
 
 ### Push secrets
@@ -200,7 +308,7 @@ POST /v1/secrets/push
 }
 ```
 
-Full sync: secrets not in payload are **deleted**.
+Full sync: secrets not in payload are moved to **trash**.
 
 ### Pull secrets
 
@@ -272,6 +380,18 @@ GET /v1/users/me/usage
 
 ---
 
+## Activity
+
+### List activity
+
+```http
+GET /v1/activity?limit=50&offset=0
+```
+
+Returns paginated activity logs for the current user. See [Security](./security#activity-logs) for details.
+
+---
+
 ## OAuth Device Flow
 
 ### 1. Start
@@ -300,6 +420,23 @@ Returns `status`: `pending`, `approved`, `expired`, `denied`.
 {
   "data": { ... },
   "meta": { "requestId": "550e8400-..." }
+}
+```
+
+### Paginated
+
+```json
+{
+  "data": [ ... ],
+  "meta": {
+    "requestId": "550e8400-...",
+    "pagination": {
+      "limit": 25,
+      "offset": 0,
+      "total": 100,
+      "hasMore": true
+    }
+  }
 }
 ```
 

@@ -104,6 +104,16 @@ keyway run -e production -- ./deploy.sh
 keyway run -- python3 script.py
 ```
 
+### AI Agents Integration
+
+When using AI coding assistants like **Claude Code**, **Gemini CLI**, or **GitHub Copilot CLI**, you want to avoid giving them access to your `.env` files (which they can read if they are on disk).
+
+`keyway run` solves this:
+1. The AI agent runs `keyway run -- npm test`.
+2. Secrets are injected in memory.
+3. Tests pass.
+4. The AI never sees the actual secret values, only the success/failure output.
+
 :::tip Zero-Trust
 This is the most secure way to use secrets locally or in CI/CD, as no `.env` file is created.
 :::

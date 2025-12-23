@@ -7,56 +7,29 @@ title: MCP Server
 
 The Keyway MCP server allows AI assistants to securely access your secrets.
 
-## Prerequisites
+## Quick Install
 
-```bash npm2yarn
-npm install -g @keywaysh/cli
-```
+### Claude Code
 
 ```bash
-keyway login
+claude mcp add keyway npx @keywaysh/mcp
 ```
 
----
+### VS Code
 
-## Configuration
-
-### Claude Desktop
-
-Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
-
-```json
-{
-  "mcpServers": {
-    "keyway": {
-      "command": "npx",
-      "args": ["-y", "@keywaysh/mcp"],
-      "cwd": "/path/to/your/project"
-    }
-  }
-}
+```bash
+code --add-mcp '{"name":"keyway","command":"npx","args":["-y","@keywaysh/mcp"]}'
 ```
 
-### VS Code / Cursor
+### Cursor
 
-Add to settings.json (`Cmd+Shift+P` → "Preferences: Open User Settings (JSON)"):
+Go to **Settings** → **MCP** → **Add new MCP Server**, then use:
+- Command: `npx`
+- Args: `-y @keywaysh/mcp`
 
-```json
-{
-  "mcp.servers": {
-    "keyway": {
-      "command": "npx",
-      "args": ["-y", "@keywaysh/mcp"],
-      "cwd": "${workspaceFolder}"
-    }
-  }
-}
-```
+### Windsurf
 
-### Claude Code CLI
-
-Add to `~/.claude.json`:
-
+Add to your Windsurf MCP config:
 ```json
 {
   "mcpServers": {
@@ -68,20 +41,43 @@ Add to `~/.claude.json`:
 }
 ```
 
-### Windsurf
+### Warp
 
-Add to Windsurf MCP settings:
-
+**Settings** → **AI** → **Manage MCP Servers** → **Add**, then use:
 ```json
 {
   "mcpServers": {
     "keyway": {
       "command": "npx",
-      "args": ["-y", "@keywaysh/mcp"],
-      "cwd": "/path/to/your/project"
+      "args": ["-y", "@keywaysh/mcp"]
     }
   }
 }
+```
+
+### GitHub Copilot
+
+```bash
+/mcp add
+```
+
+Then enter `npx -y @keywaysh/mcp` when prompted.
+
+### Goose
+
+**Advanced settings** → **Extensions** → **Add custom extension**, select `STDIO` type, then use:
+- Command: `npx -y @keywaysh/mcp`
+
+---
+
+## Prerequisites
+
+```bash npm2yarn
+npm install -g @keywaysh/cli
+```
+
+```bash
+keyway login
 ```
 
 ---

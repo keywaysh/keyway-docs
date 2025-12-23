@@ -10,33 +10,26 @@ title: Getting Started
 
 ## Quick Start
 
-**1. Install**
-
-```bash npm2yarn
-npm install -g @keywaysh/cli
-```
-
-**2. Initialize & Push**
+**1. Initialize**
 
 ```bash
 cd your-project
-keyway init    # Opens browser for GitHub auth
-keyway push    # Sync your .env
+npx @keywaysh/cli init    # Opens browser for GitHub auth + syncs your .env
 ```
 
-**3. Pull (on another machine or teammate)**
+**2. Pull (on another machine or teammate)**
 
 ```bash
-keyway pull
+npx @keywaysh/cli pull
 ```
 
-**4. Sync with a provider (optional)**
+**3. Sync with a provider (optional)**
 
 ```bash
-keyway sync vercel
+npx @keywaysh/cli sync vercel
 ```
 
-That's it. Your team members with repo access can immediately `keyway pull`.
+That's it. Your team members with repo access can immediately pull secrets.
 
 ## How It Works
 

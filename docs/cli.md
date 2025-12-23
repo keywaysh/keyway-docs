@@ -5,8 +5,18 @@ title: CLI Reference
 
 # CLI Reference
 
+```bash
+npx @keywaysh/cli init
+```
+
+Or install globally:
+
 ```bash npm2yarn
 npm install -g @keywaysh/cli
+```
+
+```bash title="Homebrew (macOS/Linux)"
+brew install keywaysh/tap/keyway
 ```
 
 ## Commands

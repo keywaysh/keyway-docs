@@ -9,17 +9,11 @@ Official documentation for [Keyway](https://keyway.sh) - GitHub-native secrets m
 Keyway is a secrets manager that uses GitHub as the source of truth for access control. If you have access to a repo, you get access to its secrets.
 
 ```bash
-# Install
-npm install -g @keywaysh/cli
-
-# Login with GitHub
-keyway login
-
-# Push your .env to Keyway
-keyway push
+# Initialize vault (authenticates + syncs .env)
+npx @keywaysh/cli init
 
 # Pull secrets on another machine
-keyway pull
+npx @keywaysh/cli pull
 ```
 
 ## Documentation Structure

@@ -72,12 +72,10 @@ Then enter `npx -y @keywaysh/mcp` when prompted.
 
 ## Prerequisites
 
-```bash npm2yarn
-npm install -g @keywaysh/cli
-```
+Login with the Keyway CLI:
 
 ```bash
-keyway login
+npx @keywaysh/cli login
 ```
 
 ---

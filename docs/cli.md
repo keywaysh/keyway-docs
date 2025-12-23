@@ -81,6 +81,35 @@ keyway pull -e staging -f .env.stg   # Compare environments
 
 ---
 
+### keyway run
+
+Run a command with secrets injected into the environment. Secrets are fetched from the vault and kept in memory (RAM) only, never written to disk.
+
+```bash
+keyway run [options] -- <command>
+```
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `-e, --env <name>` | `development` | Environment to use |
+
+```bash
+# Run with default environment (development)
+keyway run -- npm run dev
+
+# Run with specific environment
+keyway run -e production -- ./deploy.sh
+
+# Run any command
+keyway run -- python3 script.py
+```
+
+:::tip Zero-Trust
+This is the most secure way to use secrets locally or in CI/CD, as no `.env` file is created.
+:::
+
+---
+
 ### keyway doctor
 
 Run diagnostic checks.

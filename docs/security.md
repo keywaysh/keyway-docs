@@ -14,6 +14,31 @@ title: Security
 
 ---
 
+## Runtime Security (Zero-Trust)
+
+Keyway promotes a "Zero-Trust" approach where secrets should not persist on disk in unencrypted form.
+
+### Runtime Injection
+
+Using `keyway run`, secrets are:
+1. Fetched from the vault via TLS 1.3
+2. Decrypted in memory (RAM)
+3. Injected directly into the child process environment
+4. **Never written to disk** (no `.env` file created)
+
+This mitigates risks associated with:
+- Accidental commits of `.env` files
+- Backup software archiving unencrypted secrets
+- Malware scanning the filesystem for credential patterns
+- Residual data on disk after deletion
+
+```bash
+# Example: Inject secrets directly into memory
+keyway run -- npm start
+```
+
+---
+
 ## Default Permissions
 
 GitHub repo access = Keyway vault access. No separate user management.
@@ -308,6 +333,7 @@ keyway doctor
 5. **Separate environments** - Don't use production secrets locally
 6. **Set expiration dates** - API keys should expire within 1 year
 7. **Monitor activity logs** - Review access patterns periodically
+8. **Use Runtime Injection** - Use `keyway run` to avoid storing secrets on disk
 
 ---
 

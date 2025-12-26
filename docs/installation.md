@@ -69,7 +69,7 @@ Downloads the latest binary to `/usr/local/bin/keyway`.
 
 ## Manual Download (All Platforms)
 
-Download pre-built binaries from [GitHub Releases](https://github.com/keywaysh/cli-go/releases/latest):
+Download pre-built binaries from [GitHub Releases](https://github.com/keywaysh/cli/releases/latest):
 
 | Platform | Architecture | Download |
 |----------|--------------|----------|
@@ -81,7 +81,7 @@ Download pre-built binaries from [GitHub Releases](https://github.com/keywaysh/c
 
 ### Windows Installation
 
-1. Download `keyway-win-x64.exe` from [releases](https://github.com/keywaysh/cli-go/releases/latest)
+1. Download `keyway-win-x64.exe` from [releases](https://github.com/keywaysh/cli/releases/latest)
 2. Rename to `keyway.exe`
 3. Move to a folder in your PATH (e.g., `C:\Windows\System32` or create `C:\keyway`)
 4. Run `keyway init` in your project
@@ -129,7 +129,7 @@ brew upgrade keyway
 
 ### Manual
 
-Re-download the latest binary from [releases](https://github.com/keywaysh/cli-go/releases/latest).
+Re-download the latest binary from [releases](https://github.com/keywaysh/cli/releases/latest).
 
 ## Uninstalling
 

@@ -68,6 +68,8 @@ pnpm serve
 | [keyway-dashboard](https://github.com/keywaysh/keyway-dashboard) | Web dashboard |
 | [keyway-landing](https://github.com/keywaysh/keyway-landing) | Marketing site |
 | [keyway-crypto](https://github.com/keywaysh/keyway-crypto) | Go encryption microservice |
+| [keyway-mcp](https://github.com/keywaysh/keyway-mcp) | MCP server for AI assistants |
+| [keyway-action](https://github.com/keywaysh/keyway-action) | GitHub Action for CI/CD |
 
 ## License
 

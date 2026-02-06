@@ -13,7 +13,7 @@ Keyway is a secrets manager that uses GitHub as the source of truth for access c
 ```bash
 brew install keywaysh/tap/keyway
 keyway init
-keyway pull
+keyway run -- npm start
 ```
 
 ## Documentation Structure
